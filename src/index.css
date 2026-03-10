@@ -1,0 +1,308 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+
+@theme {
+  --font-sans: 'Space Grotesk', 'Noto Sans TC', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-pixel: 'Press Start 2P', cursive;
+  --font-8bit: 'Silkscreen', cursive;
+  --color-navy: #0a192f;
+  --color-navy-light: #112240;
+  --color-navy-lightest: #233554;
+  --color-slate-600: #495670;
+  --color-slate-500: #8892b0;
+  --color-slate-400: #a8b2d1;
+  --color-slate-300: #ccd6f6;
+  --color-slate-200: #e6f1ff;
+  --color-accent: #10b981;
+  --color-accent-light: #34d399;
+  --color-accent-tint: rgba(16, 185, 129, 0.1);
+  --color-pixel-green: #00ff41;
+  --color-pixel-cyan: #00e5ff;
+}
+
+/* Reset must be in @layer base so it doesn't override Tailwind utilities like mx-auto */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-navy);
+  color: var(--color-slate-500);
+  min-width: 320px;
+  overflow-x: hidden;
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-navy);
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-navy);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-navy-lightest);
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================
+   8-BIT PIXEL STYLE UTILITIES
+   ============================================ */
+
+/* Basic pixel border — solid 4px block outline */
+.pixel-border {
+  box-shadow:
+    -4px 0 0 0 var(--color-accent),
+    4px 0 0 0 var(--color-accent),
+    0 -4px 0 0 var(--color-accent),
+    0 4px 0 0 var(--color-accent),
+    -4px -4px 0 0 var(--color-accent),
+    4px -4px 0 0 var(--color-accent),
+    -4px 4px 0 0 var(--color-accent),
+    4px 4px 0 0 var(--color-accent);
+}
+
+/* Clipped corners — pixel-perfect chamfered box */
+.pixel-corner {
+  border-radius: 0;
+  image-rendering: pixelated;
+  clip-path: polygon(
+    0 4px,
+    4px 4px,
+    4px 0,
+    calc(100% - 4px) 0,
+    calc(100% - 4px) 4px,
+    100% 4px,
+    100% calc(100% - 4px),
+    calc(100% - 4px) calc(100% - 4px),
+    calc(100% - 4px) 100%,
+    4px 100%,
+    4px calc(100% - 4px),
+    0 calc(100% - 4px)
+  );
+}
+
+/*
+  .pixel-corners
+  Four corner decorations. Container must be `relative`.
+  Usage: add 4 child divs with classes .pc-tl .pc-tr .pc-bl .pc-br
+*/
+.pixel-corners {
+  position: relative;
+  isolation: isolate;
+}
+
+.pixel-corners > .pc-tl,
+.pixel-corners > .pc-tr,
+.pixel-corners > .pc-bl,
+.pixel-corners > .pc-br {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-accent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.pixel-corners > .pc-tl { top: -3px; left: -3px; }
+.pixel-corners > .pc-tr { top: -3px; right: -3px; }
+.pixel-corners > .pc-bl { bottom: -3px; left: -3px; }
+.pixel-corners > .pc-br { bottom: -3px; right: -3px; }
+
+/*
+  .pixel-divider
+  Full-width section separator using a repeating dash pattern
+  rendered via linear-gradient. Simulates a pixel dotted line.
+  Usage: <hr class="pixel-divider" /> or <div class="pixel-divider"></div>
+*/
+.pixel-divider {
+  width: 100%;
+  height: 4px;
+  border: none;
+  background: repeating-linear-gradient(
+    to right,
+    var(--color-accent) 0px,
+    var(--color-accent) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+  opacity: 0.35;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/*
+  .pixel-glow
+  Multi-layer box-shadow glow that mimics a CRT phosphor bloom.
+  Layers: tight inner + spread mid + diffuse outer.
+  Usage: <div class="pixel-glow"> ... </div>
+*/
+.pixel-glow {
+  box-shadow:
+    0 0 0 2px var(--color-accent),
+    0 0 8px 2px rgba(16, 185, 129, 0.45),
+    0 0 20px 4px rgba(16, 185, 129, 0.2),
+    0 0 40px 8px rgba(16, 185, 129, 0.08);
+}
+
+.pixel-glow-cyan {
+  box-shadow:
+    0 0 0 2px var(--color-pixel-cyan),
+    0 0 8px 2px rgba(0, 229, 255, 0.45),
+    0 0 20px 4px rgba(0, 229, 255, 0.2),
+    0 0 40px 8px rgba(0, 229, 255, 0.08);
+}
+
+/*
+  .retro-scanlines
+  Overlays subtle CRT horizontal scan-line stripes on any container.
+  Apply to a wrapper; children must be positioned or z-indexed above.
+  Usage: <section class="retro-scanlines relative"> ... </section>
+*/
+.retro-scanlines {
+  position: relative;
+}
+
+.retro-scanlines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.08) 3px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  border-radius: inherit;
+}
+
+/*
+  .pixel-card
+  8bitcn-inspired card style:
+  - No border-radius (square corners)
+  - 2px solid accent border
+  - Corner decorations via box-shadow
+  - Subtle background tint
+  Usage: <div class="pixel-card"> ... </div>
+*/
+.pixel-card {
+  position: relative;
+  border-radius: 0;
+  border: 2px solid var(--color-navy-lightest);
+  background-color: var(--color-navy-light);
+  padding: 1.5rem;
+  transition: border-color 0.15s steps(3, end), box-shadow 0.15s steps(3, end);
+}
+
+.pixel-card::before,
+.pixel-card::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-accent);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.1s steps(2, end);
+}
+
+.pixel-card::before {
+  top: -4px;
+  left: -4px;
+  box-shadow: calc(100% + 0px) 0 0 0 var(--color-accent);
+}
+
+.pixel-card::after {
+  bottom: -4px;
+  left: -4px;
+  box-shadow: calc(100% + 0px) 0 0 0 var(--color-accent);
+}
+
+.pixel-card:hover {
+  border-color: var(--color-accent);
+  box-shadow:
+    4px 4px 0 0 var(--color-accent),
+    0 0 12px 2px rgba(16, 185, 129, 0.15);
+}
+
+.pixel-card:hover::before,
+.pixel-card:hover::after {
+  opacity: 1;
+}
+
+/*
+  Pixel hover lift — uses steps() timing to simulate frame-by-frame movement.
+  Apply to interactive elements that should "jump" on hover.
+*/
+.pixel-hover {
+  transition: transform 0.12s steps(3, end), box-shadow 0.12s steps(3, end);
+}
+
+.pixel-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 0 0 var(--color-accent);
+}
+
+.pixel-hover:active {
+  transform: translateY(0px);
+  box-shadow: none;
+  transition-duration: 0.05s;
+}
+
+/* Floating photo animation — gentle 8-bit bobbing */
+@keyframes pixel-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.pixel-float {
+  animation: pixel-float 4s ease-in-out infinite;
+}
+
+/* Subtle text glow on hover */
+.text-glow:hover {
+  text-shadow: 0 0 12px rgba(52, 211, 153, 0.4), 0 0 24px rgba(52, 211, 153, 0.15);
+}
+
+/* Noise overlay for premium texture */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
