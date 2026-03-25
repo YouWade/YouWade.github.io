@@ -225,7 +225,7 @@ export default function Hero() {
               variants={slideUpVariants}
               className="text-base text-slate-400 leading-relaxed max-w-md"
             >
-              3+ 年前端開發經驗，專精 Angular 與 TypeScript。
+              4 年前端開發經驗，專精 Angular 與 TypeScript。
               擅長 SAP 系統整合、Figma 切版與 RESTful API 串接，
               能獨立完成網頁開發並有效與設計師協作。
             </motion.p>
