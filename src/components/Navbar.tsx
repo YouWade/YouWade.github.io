@@ -19,6 +19,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: '關於', href: '#about', sectionId: 'about' },
   { label: '經歷', href: '#experience', sectionId: 'experience' },
   { label: '技能', href: '#skills', sectionId: 'skills' },
+  { label: 'AI', href: '#ai-development', sectionId: 'ai-development' },
   { label: '聯絡', href: '#contact', sectionId: 'contact' },
 ]
 
@@ -147,7 +148,7 @@ export default function Navbar() {
 
         {/* Mobile: inline compact links (no hamburger) */}
         <nav className="flex md:hidden items-center gap-4" aria-label="Section links mobile">
-          {NAV_ITEMS.slice(0, 3).map((item) => {
+          {NAV_ITEMS.slice(0, 4).map((item) => {
             const isActive = activeSection === item.sectionId
             return (
               <motion.a

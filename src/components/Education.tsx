@@ -1,7 +1,7 @@
 // Usage:
 // <Education />
 //
-// Left-aligned numbered section header ("03." + title + horizontal rule),
+// Left-aligned numbered section header ("04." + title + horizontal rule),
 // followed by a single clean education card with pixel corner decorations,
 // icon, institution, department, and period.
 // 8-bit pixel style: square corners, dashed borders, pixel font for numbering,
@@ -61,7 +61,7 @@ export function Education() {
               className="text-accent-light text-xs md:text-sm"
               style={{ fontFamily: "'Press Start 2P'" }}
             >
-              03.
+              04.
             </span>
             Education
           </motion.h2>
