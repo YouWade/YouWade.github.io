@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#0a192f"/>
+  <rect x="2" y="2" width="28" height="28" fill="#112240" stroke="#10b981" stroke-width="2"/>
+  <!-- Pixel corner decorations -->
+  <rect x="0" y="0" width="4" height="4" fill="#10b981"/>
+  <rect x="28" y="0" width="4" height="4" fill="#10b981"/>
+  <rect x="0" y="28" width="4" height="4" fill="#10b981"/>
+  <rect x="28" y="28" width="4" height="4" fill="#10b981"/>
+  <!-- CW text -->
+  <text x="16" y="21" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="14" fill="#10b981">CW</text>
+</svg>
