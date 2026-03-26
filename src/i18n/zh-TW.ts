@@ -170,7 +170,7 @@ export const zhTW: Translations = {
     department: '資訊工程系',
     capstoneLabel: 'Capstone Project',
     capstoneName: '車輛診斷系統 — 藍雅',
-    capstoneSummary: '手機 APP 透過 OBD 藍芽連接車輛，讀取即時數據並模擬故障資訊顯示與診斷',
+    capstoneSummary: '手機 APP 透過 OBD 藍牙連接車輛，讀取即時數據並模擬故障資訊顯示與診斷',
   },
   contact: {
     eyebrow: 'Get In Touch',
