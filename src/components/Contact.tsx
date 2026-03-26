@@ -17,6 +17,7 @@ import {
   CheckCircle,
   WarningCircle,
 } from '@phosphor-icons/react'
+import { useI18n } from '../i18n'
 
 // ─── Animation config ────────────────────────────────────────────────────────
 
@@ -43,6 +44,7 @@ const EMAILJS_PUBLIC_KEY = 'HrU-zBR6GxsExGngs'
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function Contact() {
+  const { t } = useI18n()
   const formRef = useRef<HTMLFormElement>(null)
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
 
@@ -102,7 +104,7 @@ export function Contact() {
             variants={fadeUp}
             className="text-sm font-mono text-accent-light tracking-widest uppercase mb-4"
           >
-            Get In Touch
+            {t.contact.eyebrow}
           </motion.p>
 
           {/* Heading */}
@@ -110,7 +112,7 @@ export function Contact() {
             variants={fadeUp}
             className="text-3xl md:text-4xl font-bold text-slate-200 tracking-tight mb-4"
           >
-            Let's Build Something Together
+            {t.contact.heading}
           </motion.h2>
 
           {/* Subtext */}
@@ -118,7 +120,7 @@ export function Contact() {
             variants={fadeUp}
             className="text-base text-slate-400 max-w-md mx-auto mb-10 leading-relaxed"
           >
-            對新機會、技術合作或前端工程討論保持開放態度
+            {t.contact.subtext}
           </motion.p>
 
           {/* Primary contact buttons */}
@@ -207,27 +209,27 @@ export function Contact() {
               <div className="absolute bottom-0 right-0 w-1.5 h-1.5 bg-accent" aria-hidden="true" />
 
               <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-5 text-left">
-                Leave a Message
+                {t.contact.formTitle}
               </p>
 
               {formState === 'success' ? (
                 <div className="flex flex-col items-center gap-3 py-6">
                   <CheckCircle size={40} weight="duotone" className="text-accent-light" />
-                  <p className="text-sm text-slate-300">訊息已送出，感謝您的聯繫！</p>
+                  <p className="text-sm text-slate-300">{t.contact.success}</p>
                 </div>
               ) : (
                 <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
                   {/* Name */}
                   <div>
                     <label htmlFor="contact-name" className="block text-xs font-mono text-slate-500 mb-1.5">
-                      Name
+                      {t.contact.nameLabel}
                     </label>
                     <input
                       id="contact-name"
                       type="text"
                       name="from_name"
                       required
-                      placeholder="您的名字"
+                      placeholder={t.contact.namePlaceholder}
                       className="w-full bg-navy border-2 border-navy-lightest/50 rounded-none
                                  px-3 py-2.5 text-sm text-slate-200 placeholder:text-slate-600
                                  focus:border-accent/60 focus:outline-none
@@ -238,14 +240,14 @@ export function Contact() {
                   {/* Email */}
                   <div>
                     <label htmlFor="contact-email" className="block text-xs font-mono text-slate-500 mb-1.5">
-                      Email
+                      {t.contact.emailLabel}
                     </label>
                     <input
                       id="contact-email"
                       type="email"
                       name="from_email"
                       required
-                      placeholder="your@email.com"
+                      placeholder={t.contact.emailPlaceholder}
                       className="w-full bg-navy border-2 border-navy-lightest/50 rounded-none
                                  px-3 py-2.5 text-sm text-slate-200 placeholder:text-slate-600
                                  focus:border-accent/60 focus:outline-none
@@ -256,13 +258,13 @@ export function Contact() {
                   {/* Message */}
                   <div>
                     <label htmlFor="contact-message" className="block text-xs font-mono text-slate-500 mb-1.5">
-                      Message
+                      {t.contact.messageLabel}
                     </label>
                     <textarea
                       id="contact-message"
                       name="message"
                       rows={3}
-                      placeholder="想說些什麼..."
+                      placeholder={t.contact.messagePlaceholder}
                       className="w-full bg-navy border-2 border-navy-lightest/50 rounded-none
                                  px-3 py-2.5 text-sm text-slate-200 placeholder:text-slate-600
                                  focus:border-accent/60 focus:outline-none
@@ -274,7 +276,7 @@ export function Contact() {
                   {formState === 'error' && (
                     <div className="flex items-center gap-2 text-xs text-rose-400">
                       <WarningCircle size={16} weight="bold" />
-                      <span>送出失敗，請稍後再試或直接寄信給我</span>
+                      <span>{t.contact.error}</span>
                     </div>
                   )}
 
@@ -294,7 +296,7 @@ export function Contact() {
                                cursor-pointer"
                   >
                     <PaperPlaneTilt size={16} weight="bold" aria-hidden="true" />
-                    {formState === 'submitting' ? '送出中...' : '送出訊息'}
+                    {formState === 'submitting' ? t.contact.submitting : t.contact.submit}
                   </button>
                 </form>
               )}

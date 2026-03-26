@@ -1,7 +1,7 @@
 // Usage:
 // <Skills />
 //
-// Left-aligned numbered section header ("02." + title + horizontal rule),
+// Left-aligned numbered section header ("03." + title + horizontal rule),
 // core skills (Angular, React, TypeScript) rendered as large pixel-border badges,
 // other skills as muted smaller mono pills,
 // and a 2-col / 3-col soft skills grid with Phosphor duotone icons.
@@ -12,10 +12,11 @@ import {
   ChatCircle,
   UsersThree,
   Lightbulb,
-  Timer,
+  Robot,
   BookOpen,
-  Shield,
+  GitBranch,
 } from '@phosphor-icons/react'
+import { useI18n } from '../i18n'
 
 // ─── Animation config ────────────────────────────────────────────────────────
 
@@ -59,18 +60,18 @@ type SoftSkill = {
   Icon: React.ElementType
 }
 
-const SOFT_SKILLS: SoftSkill[] = [
-  { label: '溝通協作', Icon: ChatCircle },
-  { label: '團隊合作', Icon: UsersThree },
-  { label: '問題解決', Icon: Lightbulb },
-  { label: '自我管理', Icon: Timer },
-  { label: '持續學習', Icon: BookOpen },
-  { label: '抗壓韌性', Icon: Shield },
-]
+const SOFT_SKILL_ICONS = [ChatCircle, UsersThree, Lightbulb, Robot, GitBranch, BookOpen]
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function Skills() {
+  const { t } = useI18n()
+
+  const softSkills: SoftSkill[] = t.skills.softSkills.map((label, i) => ({
+    label,
+    Icon: SOFT_SKILL_ICONS[i],
+  }))
+
   return (
     <section
       id="skills"
@@ -95,9 +96,9 @@ export function Skills() {
               className="text-accent-light text-xs md:text-sm"
               style={{ fontFamily: "'Press Start 2P'" }}
             >
-              02.
+              03.
             </span>
-            Technical Skills
+            {t.skills.sectionTitle}
           </motion.h2>
           <motion.div
             variants={fadeUp}
@@ -116,7 +117,7 @@ export function Skills() {
           {/* Core skills container with subtle background */}
           <div className="bg-navy-light/30 border border-navy-lightest/20 rounded-none p-4 mb-3">
             <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-3">
-              Core Stack
+              {t.skills.coreLabel}
             </p>
             <div
               className="flex flex-wrap gap-3"
@@ -179,7 +180,7 @@ export function Skills() {
             variants={fadeUp}
             className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-12 mb-6"
           >
-            Other Strengths
+            {t.skills.otherLabel}
           </motion.p>
 
           <div
@@ -187,7 +188,7 @@ export function Skills() {
             role="list"
             aria-label="Soft skills"
           >
-            {SOFT_SKILLS.map((skill) => (
+            {softSkills.map((skill) => (
               <motion.div
                 key={skill.label}
                 role="listitem"

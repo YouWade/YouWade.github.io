@@ -8,6 +8,8 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
+import { Translate } from '@phosphor-icons/react'
+import { useI18n } from '../i18n'
 
 interface NavItem {
   label: string
@@ -15,13 +17,16 @@ interface NavItem {
   sectionId: string
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { label: '關於', href: '#about', sectionId: 'about' },
-  { label: '經歷', href: '#experience', sectionId: 'experience' },
-  { label: '技能', href: '#skills', sectionId: 'skills' },
-  { label: 'AI', href: '#ai-development', sectionId: 'ai-development' },
-  { label: '聯絡', href: '#contact', sectionId: 'contact' },
-]
+function useNavItems(): NavItem[] {
+  const { t } = useI18n()
+  return [
+    { label: t.nav.about, href: '#about', sectionId: 'about' },
+    { label: t.nav.experience, href: '#experience', sectionId: 'experience' },
+    { label: t.nav.ai, href: '#ai-development', sectionId: 'ai-development' },
+    { label: t.nav.skills, href: '#skills', sectionId: 'skills' },
+    { label: t.nav.contact, href: '#contact', sectionId: 'contact' },
+  ]
+}
 
 const spring = { type: 'spring', stiffness: 100, damping: 20 } as const
 const springFast = { type: 'spring', stiffness: 140, damping: 18 } as const
@@ -43,6 +48,8 @@ const navItemVariants = {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState<string>('about')
+  const { locale, toggleLocale } = useI18n()
+  const NAV_ITEMS = useNavItems()
 
   const detectActiveSection = useCallback(() => {
     const offset = 120
@@ -71,6 +78,7 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     detectActiveSection()
     return () => window.removeEventListener('scroll', handleScroll)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [detectActiveSection])
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, item: NavItem) => {
@@ -146,8 +154,35 @@ export default function Navbar() {
           })}
         </nav>
 
+        {/* Language toggle */}
+        <motion.button
+          variants={navItemVariants}
+          onClick={toggleLocale}
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5
+                     text-xs font-mono text-slate-400
+                     border border-navy-lightest/40 rounded-none
+                     hover:text-accent hover:border-accent/60
+                     active:translate-y-[1px]
+                     transition-colors duration-150 cursor-pointer
+                     focus:outline-none focus:ring-2 focus:ring-accent/50"
+          aria-label={locale === 'zh-TW' ? 'Switch to English' : '切換至中文'}
+        >
+          <Translate size={14} weight="bold" aria-hidden="true" />
+          {locale === 'zh-TW' ? 'EN' : '中'}
+        </motion.button>
+
         {/* Mobile: inline compact links (no hamburger) */}
         <nav className="flex md:hidden items-center gap-4" aria-label="Section links mobile">
+          <motion.button
+            variants={navItemVariants}
+            onClick={toggleLocale}
+            className="text-xs font-mono text-slate-400 hover:text-accent
+                       transition-colors cursor-pointer
+                       focus:outline-none focus:ring-2 focus:ring-accent/50 rounded-none"
+            aria-label={locale === 'zh-TW' ? 'Switch to English' : '切換至中文'}
+          >
+            {locale === 'zh-TW' ? 'EN' : '中'}
+          </motion.button>
           {NAV_ITEMS.slice(0, 4).map((item) => {
             const isActive = activeSection === item.sectionId
             return (

@@ -15,8 +15,8 @@ function App() {
         <div className="max-w-4xl mx-auto px-6 sm:px-10 lg:px-16 space-y-16 md:space-y-24">
           <Hero />
           <Experience />
-          <Skills />
           <AIDevelopment />
+          <Skills />
           <Education />
           <Contact />
         </div>

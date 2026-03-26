@@ -1,7 +1,7 @@
 // Usage:
 // <AIDevelopment />
 //
-// Left-aligned numbered section header ("03." + title + horizontal rule),
+// Left-aligned numbered section header ("02." + title + horizontal rule),
 // showcasing AI-assisted development workflow, verification pipeline,
 // security/risk control, and real-world lessons learned from the ScanUp project.
 // 8-bit pixel style: square corners, dashed borders, pixel font for numbering.
@@ -25,6 +25,7 @@ import {
   FileDashed,
   BrowsersIcon,
 } from '@phosphor-icons/react'
+import { useI18n } from '../i18n'
 
 // ─── Animation config ────────────────────────────────────────────────────────
 
@@ -42,143 +43,12 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: spring },
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── Icon arrays ──────────────────────────────────────────────────────────────
 
-interface WorkflowStep {
-  Icon: React.ElementType
-  title: string
-  description: string
-}
-
-interface SecurityItem {
-  Icon: React.ElementType
-  title: string
-  details: string[]
-}
-
-interface LessonItem {
-  Icon: React.ElementType
-  incident: string
-  root: string
-  fix: string
-}
-
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const AI_WORKFLOW_STEPS: WorkflowStep[] = [
-  {
-    Icon: TreeStructure,
-    title: '架構規劃 → SDD 約束',
-    description:
-      '透過 Planner / Architect Agent 自動產出 PRD、系統設計文件（SDD）與任務拆分。SDD 作為 AI 的 ground truth，避免後續開發產生幻覺',
-  },
-  {
-    Icon: Code,
-    title: '多代理協作 + 檔案邊界',
-    description:
-      '每個 Agent 鎖定嚴格的檔案邊界 — api-engineer 只能動 types + api-client，hook-engineer 只能動 hooks，禁止跨層修改，爆炸半徑鎖在單一層',
-  },
-  {
-    Icon: GitBranch,
-    title: 'Git Worktree 隔離',
-    description:
-      '所有子代理強制在獨立 Git Worktree 運作，改動不直接進主分支。改壞了直接丟掉分支重來，等於內建 rollback 機制',
-  },
-  {
-    Icon: Eye,
-    title: '驗收三件套（自動觸發）',
-    description:
-      '每次實作完自動觸發三個獨立 Agent：Validator 跑 lint + typecheck 有錯直接修、Code Reviewer 按 checklist 審查品質與效能、UI/UX Designer 比對設計規範檢查視覺合規',
-  },
-  {
-    Icon: Detective,
-    title: 'OpenAPI MCP 規格比對',
-    description:
-      'API 修改前先用 OpenAPI MCP 查 Swagger 規格確認欄位與路徑。曾靠此抓到 AI 把 /merchants/apply 寫成 /merchant/apply（差一個 s → 直接 404）',
-  },
-]
-
-const VERIFICATION_PIPELINE: WorkflowStep[] = [
-  {
-    Icon: TestTube,
-    title: '自動化檢查',
-    description:
-      'local-ci 指令串聯：套件安全掃描 → ESLint → TypeScript 型別檢查，Turborepo 平行跑三個 App。最後 push 上 Cloud Build 的 Docker 建置失敗就不會部署',
-  },
-  {
-    Icon: BrowsersIcon,
-    title: '視覺回歸測試',
-    description:
-      'Playwright 截圖腳本自動登入三個 App 逐頁截圖，改版後與上次的圖做 diff 比對（簡易版 Visual Regression）。RWD 在 375 / 768 / 1024 / 1920 四個斷點手動驗證',
-  },
-  {
-    Icon: Checks,
-    title: '人工 Flow 驗證',
-    description:
-      '使用測試帳號手動走關鍵 User Flow — 表單驗證、OAuth redirect、狀態切換導向是否正確。動到 Axios interceptor、useAuth 等跨 App 共用程式碼一定逐行 Review 才 merge',
-  },
-]
-
-const SECURITY_MEASURES: SecurityItem[] = [
-  {
-    Icon: Lock,
-    title: '三層資料隔離',
-    details: [
-      '第一層：.gitignore 排除 .env / .pem / credential，Agent commit 時帶不進去',
-      '第二層：Agent 規格檔寫死檔案邊界，寫入範圍鎖死',
-      '第三層：敏感資訊存放 .claude/ 目錄（被 gitignore 排除），API key 由 CI 注入',
-    ],
-  },
-  {
-    Icon: ShieldCheck,
-    title: 'AI 輸出防護',
-    details: [
-      '型別必須對齊 Swagger schema，不可自創欄位 — 指不回規格出處的直接打回',
-      '不餵整份外部文件，限定搜尋局部 60-100 行，防止 context 污染',
-      '產出與審查分離 — 寫 API 的 Agent 和審查的 Agent 是不同角色，交叉檢查',
-      'API 呼叫次數限制不超過 2 次，防止幻覺導致瘋狂打 API',
-    ],
-  },
-  {
-    Icon: Warning,
-    title: 'Prompt Injection 防護',
-    details: [
-      'Agent 自我檢查清單：型別對齊、路徑存在、HTTP method 正確',
-      '專責 Injection 檢測代理與其他子代理溝通驗證，再回報總代理',
-      'Claude Code 平台內建機制：工具回傳內容疑似 injection 直接向使用者示警',
-      '嚴禁實際打 Production API，開發期間只查公開 Swagger endpoint',
-    ],
-  },
-]
-
-const LESSONS_LEARNED: LessonItem[] = [
-  {
-    Icon: Bug,
-    incident: 'AI 自創 Swagger 不存在的欄位',
-    root: '型別檢查會過但上線讀到 undefined，連續好幾個 commit 都在修 build fail',
-    fix: '規格裡加「型別必須對齊 Swagger，不可自創欄位」+ 每個欄位要能指回 Swagger 出處',
-  },
-  {
-    Icon: Lightning,
-    incident: 'Code Splitting 重構破壞頁面',
-    root: 'Agent 不只改 import 方式，還順手動了 JSX 結構和業務邏輯 → 頁面白屏',
-    fix: '直接 git 回到重構前版本。事後加規則：重構任務必須零功能零視覺變更，Prompt 要明確寫「禁止動什麼」',
-  },
-  {
-    Icon: FileDashed,
-    incident: '認證方案互相矛盾',
-    root: '兩個 SDD 分別建議 HttpOnly Cookie 和 localStorage，造成架構衝突',
-    fix: '查 Swagger response 確認回傳 JWT（非 Set-Cookie），檢查現有 interceptor — 以系統事實為準，不讓 AI 幻想方案',
-  },
-]
-
-const CORE_PRINCIPLES: string[] = [
-  'Agent 的自由度要盡可能壓低，Prompt 越具體越安全，寧可多跑幾輪也不要一次給太大的改動範圍',
-  '所有 AI 產出都要能指回一個具體的規格出處 — 指不回來的就打回',
-  '限定範圍餵資料（具體檔案、具體行數），不問「這個專案怎麼運作」這種開放問題',
-  '安全相關程式碼（認證、授權、跨 App 共用）不完全依賴 AI，一定逐行 Review 才 merge',
-  'Prompt 要寫「禁止動什麼」而不只是「要做什麼」— 約束比指令更重要',
-]
+const WORKFLOW_ICONS = [TreeStructure, Code, GitBranch, Eye, Detective]
+const VERIFICATION_ICONS = [TestTube, BrowsersIcon, Checks]
+const SECURITY_ICONS = [Lock, ShieldCheck, Warning]
+const LESSON_ICONS = [Bug, Lightning, FileDashed]
 
 // ─── Pixel Corners Helper ────────────────────────────────────────────────────
 
@@ -196,6 +66,28 @@ function PixelCorners({ className = 'bg-accent' }: { className?: string }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function AIDevelopment() {
+  const { t } = useI18n()
+
+  const workflowSteps = t.ai.workflow.map((step, i) => ({
+    Icon: WORKFLOW_ICONS[i],
+    ...step,
+  }))
+
+  const verificationItems = t.ai.verification.map((item, i) => ({
+    Icon: VERIFICATION_ICONS[i],
+    ...item,
+  }))
+
+  const securityMeasures = t.ai.security.map((measure, i) => ({
+    Icon: SECURITY_ICONS[i],
+    ...measure,
+  }))
+
+  const lessonsLearned = t.ai.lessons.map((lesson, i) => ({
+    Icon: LESSON_ICONS[i],
+    ...lesson,
+  }))
+
   return (
     <section
       id="ai-development"
@@ -220,9 +112,9 @@ export function AIDevelopment() {
               className="text-accent-light text-xs md:text-sm"
               style={{ fontFamily: "'Press Start 2P'" }}
             >
-              03.
+              02.
             </span>
-            AI Development
+            {t.ai.sectionTitle}
           </motion.h2>
           <motion.div
             variants={fadeUp}
@@ -252,12 +144,9 @@ export function AIDevelopment() {
               />
               <div>
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  以 <span className="text-accent-light font-semibold">Claude Code</span> 為核心 AI 開發夥伴，
-                  在 ScanUp（Turborepo Monorepo 三端架構）的實際開發中，建立了一套完整的
-                  <span className="text-accent-light font-semibold"> AI 輔助開發工作流</span>。
-                  核心原則：每個環節都有 AI 參與，但
-                  <span className="text-accent-light font-semibold">人類掌控決策權</span>，
-                  所有產出必須能指回具體規格出處。
+                  {t.ai.intro.text1}<span className="text-accent-light font-semibold">{t.ai.intro.highlight1}</span>{t.ai.intro.text2}
+                  <span className="text-accent-light font-semibold">{t.ai.intro.highlight2}</span>{t.ai.intro.text3}
+                  <span className="text-accent-light font-semibold">{t.ai.intro.highlight3}</span>{t.ai.intro.text4}
                 </p>
               </div>
             </div>
@@ -275,11 +164,11 @@ export function AIDevelopment() {
             variants={fadeUp}
             className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-6"
           >
-            Multi-Agent Workflow
+            {t.ai.workflowLabel}
           </motion.p>
 
           <div className="space-y-3">
-            {AI_WORKFLOW_STEPS.map((step, index) => (
+            {workflowSteps.map((step, index) => (
               <motion.div
                 key={step.title}
                 variants={fadeUp}
@@ -320,11 +209,11 @@ export function AIDevelopment() {
             variants={fadeUp}
             className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-12 mb-6"
           >
-            Verification Pipeline
+            {t.ai.verificationLabel}
           </motion.p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {VERIFICATION_PIPELINE.map((item) => (
+            {verificationItems.map((item) => (
               <motion.div
                 key={item.title}
                 variants={fadeUp}
@@ -358,11 +247,11 @@ export function AIDevelopment() {
             variants={fadeUp}
             className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-12 mb-6"
           >
-            Security & Risk Control
+            {t.ai.securityLabel}
           </motion.p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {SECURITY_MEASURES.map((measure) => (
+            {securityMeasures.map((measure) => (
               <motion.div
                 key={measure.title}
                 variants={fadeUp}
@@ -403,11 +292,11 @@ export function AIDevelopment() {
             variants={fadeUp}
             className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-12 mb-6"
           >
-            Lessons Learned
+            {t.ai.lessonsLabel}
           </motion.p>
 
           <div className="space-y-4">
-            {LESSONS_LEARNED.map((lesson) => (
+            {lessonsLearned.map((lesson) => (
               <motion.div
                 key={lesson.incident}
                 variants={fadeUp}
@@ -452,7 +341,7 @@ export function AIDevelopment() {
             variants={fadeUp}
             className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-12 mb-6"
           >
-            Core Principles
+            {t.ai.principlesLabel}
           </motion.p>
 
           <motion.div
@@ -466,7 +355,7 @@ export function AIDevelopment() {
               aria-hidden="true"
             />
             <ul className="space-y-3" role="list">
-              {CORE_PRINCIPLES.map((point, i) => (
+              {t.ai.principles.map((point, i) => (
                 <li key={i} className="flex gap-3 text-sm text-slate-400 leading-relaxed">
                   <span
                     className="text-accent/50 text-[9px] shrink-0 mt-1"

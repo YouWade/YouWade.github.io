@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { Envelope, Phone, LinkedinLogo, ThreadsLogo, InstagramLogo } from '@phosphor-icons/react'
 import profile from '../assets/profile.jpg'
+import { useI18n } from '../i18n'
 
 // ─── Spring config ────────────────────────────────────────────────────────────
 const spring = { type: 'spring', stiffness: 100, damping: 20 } as const
@@ -107,6 +108,7 @@ export default function Hero() {
   const ref = useRef<HTMLElement>(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const scrambledSkill = useTextScramble(SKILLS)
+  const { t } = useI18n()
 
   return (
     <section
@@ -186,7 +188,7 @@ export default function Hero() {
               variants={slideUpVariants}
               className="text-sm text-accent-light font-mono tracking-wider"
             >
-              Hi, my name is
+              {t.hero.greeting}
             </motion.p>
 
             {/* Name block */}
@@ -217,7 +219,7 @@ export default function Hero() {
                 className="w-1.5 h-1.5 rounded-none bg-accent flex-shrink-0 animate-pulse"
                 aria-hidden="true"
               />
-              Front-End Engineer
+              {t.hero.title}
             </motion.div>
 
             {/* Bio */}
@@ -225,9 +227,7 @@ export default function Hero() {
               variants={slideUpVariants}
               className="text-base text-slate-400 leading-relaxed max-w-md"
             >
-              4 年前端開發經驗，專精 Angular 與 TypeScript。
-              擅長 SAP 系統整合、Figma 切版與 RESTful API 串接，
-              能獨立完成網頁開發並有效與設計師協作。
+              {t.hero.bio}
             </motion.p>
 
             {/* Skill scramble */}

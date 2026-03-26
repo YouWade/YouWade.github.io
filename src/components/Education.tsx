@@ -9,6 +9,7 @@
 
 import { motion } from 'framer-motion'
 import { GraduationCap } from '@phosphor-icons/react'
+import { useI18n } from '../i18n'
 
 // ─── Animation config ────────────────────────────────────────────────────────
 
@@ -26,17 +27,12 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: spring },
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const EDUCATION = {
-  institution: '樹德科技大學',
-  department: '資訊工程系',
-  period: '2018 — 2022',
-} as const
+const CAPSTONE_TAGS = ['Android Studio', 'Java', 'Python', 'MySQL', 'Laravel'] as const
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function Education() {
+  const { t } = useI18n()
   return (
     <section
       id="education"
@@ -63,7 +59,7 @@ export function Education() {
             >
               04.
             </span>
-            Education
+            {t.education.sectionTitle}
           </motion.h2>
           <motion.div
             variants={fadeUp}
@@ -107,18 +103,44 @@ export function Education() {
 
               <div>
                 <p className="text-base font-semibold text-slate-200 leading-snug">
-                  {EDUCATION.institution}
+                  {t.education.institution}
                 </p>
                 <p className="text-sm text-slate-500 mt-0.5">
-                  {EDUCATION.department}
+                  {t.education.department}
                 </p>
               </div>
             </div>
 
             {/* Right: period */}
             <time className="font-mono text-xs text-slate-600 sm:shrink-0">
-              {EDUCATION.period}
+              2018 — 2022
             </time>
+          </motion.div>
+
+          {/* ── Capstone project ─────────────────────────────────────────── */}
+          <motion.div
+            variants={fadeUp}
+            className="mt-4 bg-navy-light/20 border border-navy-lightest/20 rounded-none p-4"
+          >
+            <p className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-2">
+              {t.education.capstoneLabel}
+            </p>
+            <p className="text-sm font-semibold text-slate-300 mb-1">
+              {t.education.capstoneName}
+            </p>
+            <p className="text-xs text-slate-500 leading-relaxed mb-3">
+              {t.education.capstoneSummary}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {CAPSTONE_TAGS.map((tag) => (
+                <span
+                  key={tag}
+                  className="font-mono text-[10px] bg-accent-tint/50 text-accent-light/70 rounded-none px-1.5 py-0.5"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
           </motion.div>
         </motion.div>
 

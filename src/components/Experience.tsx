@@ -8,9 +8,9 @@
 import { motion } from 'framer-motion'
 import {
   PawPrint,
-  Wrench,
   ArrowSquareOut,
 } from '@phosphor-icons/react'
+import { useI18n } from '../i18n'
 
 // ─── Animation config ────────────────────────────────────────────────────────
 
@@ -33,99 +33,65 @@ const fadeUp = {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface WorkExperience {
-  title: string
-  company: string
-  period: string
-  bullets: string[]
-  tags?: string[]
-}
+type ProjectKey = 'scanup' | 'lnez' | 'linebot' | 'taskManager' | 'fengti'
 
-interface Project {
+interface ProjectConfig {
+  key: ProjectKey
   name: string
-  subtitle: string
-  summary: string
   tags: string[]
-  /** Screenshot image path */
   image?: string
-  /** Phosphor icon (fallback when no image) */
   Icon?: React.ElementType
   iconColor?: string
   gradient?: string
-  /** External link (GitHub Pages, PPT, repo) */
   link?: string
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const WORK_EXPERIENCE: WorkExperience = {
-  title: 'Front-End Engineer',
-  company: 'GLSoft',
-  period: 'Jul 2022 — Present',
-  bullets: [
-    '獨立負責前端網頁開發，主要運用 Angular 與 TypeScript 完成功能實作及與 SAP 系統整合',
-    '應用 IMPEX 進行 Slot 與 Component 匯入後端，並依據 Figma 設計稿進行切版、功能開發與 API 串接',
-    '主動與客戶方工程師協作，精確釐清需求與解決任務難題，確保專案按時交付',
-    '熟悉操作 SAP ERP 的 Backoffice 與 hac 平台',
-  ],
-  tags: ['Angular', 'TypeScript', 'SAP', 'IMPEX', 'Figma', 'REST API'],
+interface Project extends ProjectConfig {
+  subtitle: string
+  summary: string
 }
 
-const PROJECTS: Project[] = [
+// ─── Static config (non-translatable fields) ──────────────────────────────────
+
+const WORK_COMPANY = 'GLSoft'
+const WORK_PERIOD = 'Jul 2022 — Present'
+const WORK_TAGS = ['Angular', 'TypeScript', 'SAP', 'IMPEX', 'Figma', 'REST API']
+
+const PROJECT_CONFIGS: ProjectConfig[] = [
   {
+    key: 'scanup',
     name: 'ScanUp',
-    subtitle: '寵物美容預約平台',
-    summary:
-      'Turborepo Monorepo 三端架構（Consumer / Seller / Admin），AI 寵物掃描、地圖搜尋、Stripe 金流整合',
     tags: ['React 19', 'TypeScript', 'Turborepo', 'Zustand', 'TanStack Query', 'Stripe', 'Docker', 'GCP'],
     Icon: PawPrint,
     iconColor: 'text-emerald-400',
     gradient: 'from-emerald-500/20 to-cyan-500/20',
   },
   {
+    key: 'lnez',
     name: 'lnez-website',
-    subtitle: '電商網站',
-    summary:
-      '完整電商流程：商品搜尋篩選、購物車、多種付款結帳、會員中心，桌面與手機響應式設計',
     tags: ['React', 'TypeScript', 'RWD', 'REST API'],
     image: '/projects/lnez.png',
     link: 'https://youwade.github.io/freelancing-lnez/',
   },
   {
+    key: 'linebot',
     name: 'Line Bot 患者管理',
-    subtitle: '醫療 Line Bot',
-    summary:
-      '透過 Line Bot 進行患者 CRUD，支援格式提示、電話模糊搜尋與重複資料檢測',
     tags: ['Node.js', 'Line Messaging API', 'Webhook'],
     image: '/projects/linebot.png',
     link: 'https://docs.google.com/presentation/d/11O6BOesXiONenlBPlJx7Zzje0D3TziDKylIroBOXAq0',
   },
   {
+    key: 'taskManager',
     name: '任務管理系統',
-    subtitle: '企業內部工具',
-    summary:
-      '公司內部任務規劃系統，Context API 全域狀態管理，LocalStorage 資料持久化',
     tags: ['React', 'Context API', 'LocalStorage', 'Hooks'],
     image: '/projects/task.webp',
     link: 'https://drive.google.com/file/d/1LCY-oEUApk2ChPkfJL345ew3h1udEup3',
   },
   {
+    key: 'fengti',
     name: '瘋貼車體包膜',
-    subtitle: '形象網站',
-    summary:
-      '企業形象網站，使用 Next.js + Fullpage.js 打造全頁滾動體驗，優化 SEO 與用戶體驗',
-    tags: ['Next.js', 'React', 'Fullpage.js', 'Tailwind CSS'],
+    tags: ['WordPress', 'Fullpage.js', 'Facebook Pixel', 'SEO'],
     image: '/projects/fengti.webp',
-  },
-  {
-    name: '車輛診斷系統',
-    subtitle: '大學專題 — 藍雅',
-    summary:
-      '手機 APP 透過 OBD 藍芽連接車輛，讀取即時數據並模擬故障資訊顯示與診斷',
-    tags: ['Android Studio', 'Java', 'Python', 'MySQL', 'Laravel'],
-    Icon: Wrench,
-    iconColor: 'text-rose-400',
-    gradient: 'from-rose-500/20 to-pink-500/20',
   },
 ]
 
@@ -246,6 +212,15 @@ function ProjectCard({ project }: { project: Project }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function Experience() {
+  const { t } = useI18n()
+
+  // Build projects by merging static config with translated text
+  const projects: Project[] = PROJECT_CONFIGS.map((config) => ({
+    ...config,
+    subtitle: t.experience.projects[config.key].subtitle,
+    summary: t.experience.projects[config.key].summary,
+  }))
+
   return (
     <section
       id="experience"
@@ -272,7 +247,7 @@ export function Experience() {
             >
               01.
             </span>
-            Work Experience
+            {t.experience.sectionTitle}
           </motion.h2>
           <motion.div
             variants={fadeUp}
@@ -298,19 +273,19 @@ export function Experience() {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-6">
               <div>
                 <p className="text-lg font-semibold text-slate-200 leading-snug">
-                  {WORK_EXPERIENCE.title}
+                  {t.experience.workTitle}
                 </p>
                 <p className="text-sm text-accent-light mt-0.5">
-                  {WORK_EXPERIENCE.company}
+                  {WORK_COMPANY}
                 </p>
               </div>
               <time className="font-mono text-xs text-slate-500 sm:shrink-0 sm:mt-1">
-                {WORK_EXPERIENCE.period}
+                {WORK_PERIOD}
               </time>
             </div>
 
             <ul className="space-y-3 mb-7" role="list">
-              {WORK_EXPERIENCE.bullets.map((bullet, i) => (
+              {t.experience.bullets.map((bullet, i) => (
                 <li
                   key={i}
                   className="flex gap-2 text-sm text-slate-400 leading-relaxed"
@@ -321,9 +296,9 @@ export function Experience() {
               ))}
             </ul>
 
-            {WORK_EXPERIENCE.tags && WORK_EXPERIENCE.tags.length > 0 && (
+            {WORK_TAGS.length > 0 && (
               <div className="flex flex-wrap gap-2" role="list" aria-label="Technologies used">
-                {WORK_EXPERIENCE.tags.map((tag) => (
+                {WORK_TAGS.map((tag) => (
                   <span
                     key={tag}
                     role="listitem"
@@ -348,7 +323,7 @@ export function Experience() {
             variants={fadeUp}
             className="text-xs font-mono text-slate-500 uppercase tracking-widest mt-12 mb-6"
           >
-            Projects
+            {t.experience.projectsLabel}
           </motion.p>
 
           <div
@@ -356,7 +331,7 @@ export function Experience() {
             role="list"
             aria-label="Projects"
           >
-            {PROJECTS.map((project) => (
+            {projects.map((project) => (
               <ProjectCard key={project.name} project={project} />
             ))}
           </div>

@@ -6,7 +6,10 @@
 // Pixel star decoration before "Built with" using CSS box-shadow technique.
 // No animations — static, low visual weight.
 
+import { useI18n } from '../i18n'
+
 export function Footer({ className = '' }: { className?: string }) {
+  const { t } = useI18n()
   return (
     <footer
       className={`border-t-2 border-dashed border-navy-lightest/30 py-10 px-6 ${className}`}
@@ -45,7 +48,7 @@ export function Footer({ className = '' }: { className?: string }) {
             className="text-slate-600 font-mono"
             style={{ fontFamily: "'Press Start 2P'", fontSize: '0.55rem' }}
           >
-            {' '}· Built with React + TypeScript · 2026
+            {' '}{t.footer.builtWith}
           </span>
         </p>
 
